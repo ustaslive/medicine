@@ -29,14 +29,14 @@
   </table>
 
 <script>
-  /* Base date for medication (May 14, 2025).  
-     In JavaScript months are numbered from 0, so May is 4. */
-  const baseDate   = new Date(2025, 4, 14);
-  const betweenDays = 3;               // period in days
-
   /* Current day without time */
   const now   = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  /* Base date for medication (June 24, 2025).
+     In JavaScript months are numbered from 0. */
+  const baseDate   = new Date(2025, 5, 24);
+  const betweenDays = 3;               // period in days
 
   const totalRows       = 14;          // how many rows to display
   const currentRowIndex = 4;           // index of "today" row
