@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <title>Medicine calendar</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 60%;
+    }
+    th, td {
+      border: 1px solid #000;
+      padding: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <table id="calendar">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Day of week</th>
+        <th>Take the pill</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows will be added dynamically -->
+    </tbody>
+  </table>
+
+<script>
+  /* Base date for medication (May 14, 2025).  
+     In JavaScript months are numbered from 0, so May is 4. */
+  const baseDate   = new Date(2025, 4, 14);
+  const betweenDays = 3;               // period in days
+
+  /* Current day without time */
+  const now   = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const totalRows       = 14;          // how many rows to display
+  const currentRowIndex = 4;           // index of "today" row
+
+  /* First date in table = today – currentRowIndex */
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() - currentRowIndex);
+
+  const dayNames = [
+    "Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"
+  ];
+
+  /* Format YYYY.MM.DD */
+  function formatDate(date) {
+    const y = date.getFullYear();
+    const m = ("0" + (date.getMonth() + 1)).slice(-2);
+    const d = ("0" +  date.getDate()).slice(-2);
+    return `${y}.${m}.${d}`;
+  }
+
+  /* Difference in whole calendar days */
+  function dateDiffInDays(d1, d2) {
+    const utc1 = Date.UTC(d1.getFullYear(), d1.getMonth(), d1.getDate());
+    const utc2 = Date.UTC(d2.getFullYear(), d2.getMonth(), d2.getDate());
+    return Math.floor((utc2 - utc1) / (1000 * 60 * 60 * 24));
+  }
+
+  /* Is it a medication day? — starting from baseDate and only forward */
+  function isMedicationDay(date) {
+    const diffDays = dateDiffInDays(baseDate, date);
+    return diffDays >= 0 && diffDays % betweenDays === 0;
+  }
+
+  const tbody = document.querySelector("#calendar tbody");
+
+  /* Building table rows */
+  for (let i = 0; i < totalRows; i++) {
+    const rowDate = new Date(startDate);
+    rowDate.setDate(startDate.getDate() + i);
+
+    const tr = document.createElement("tr");
+
+    /* Highlighting */
+    if (rowDate.getTime() === today.getTime()) {
+      tr.style.backgroundColor = "lightgreen";    // today
+    } else if (isMedicationDay(rowDate)) {
+      tr.style.backgroundColor = "yellow";        // medication day
+    }
+
+    /* Date */
+    const tdDate = document.createElement("td");
+    tdDate.textContent = formatDate(rowDate);
+    tr.appendChild(tdDate);
+
+    /* Day of week */
+    const tdDay = document.createElement("td");
+    tdDay.textContent = dayNames[rowDate.getDay()];
+    tr.appendChild(tdDay);
+
+    /* Checkmark */
+    const tdCheck = document.createElement("td");
+    if (isMedicationDay(rowDate)) {
+      tdCheck.innerHTML = '<span style="font-weight:bold">&#10004;</span>';
+    }
+    tr.appendChild(tdCheck);
+
+    tbody.appendChild(tr);
+  }
+</script>
+
+</body>
+</html>
+
